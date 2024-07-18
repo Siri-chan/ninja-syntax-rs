@@ -1,0 +1,11 @@
+[package]
+name = "ninja-syntax"
+version = "1.0.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "A function-for-function clone of ninja-syntax.py for rust."
+
+
+[dependencies]
+regex = "1.10.5"
+textwrap = "0.16.1"
