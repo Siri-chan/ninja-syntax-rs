@@ -1,10 +1,13 @@
 [package]
 name = "ninja-syntax"
+authors = ["Siri <siri1999kira@yahoo.co.jp>"]
 version = "1.0.0"
 edition = "2021"
 license = "Apache-2.0"
 description = "A function-for-function clone of ninja-syntax.py for rust."
-
+repository = "https://github.com/Siri-chan/ninja-syntax-rs"
+readme = "README.md"
+ 
 
 [dependencies]
 regex = "1.10.5"

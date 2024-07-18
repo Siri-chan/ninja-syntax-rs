@@ -9,8 +9,8 @@
 // source material, and so as per the license, the original license is included
 // in the source tree as `orig_COPYING`.
 
-use std::collections::HashMap;
 use regex::Regex;
+use std::collections::HashMap;
 
 /*
 import re
@@ -55,25 +55,35 @@ impl Default for RuleDescriptor {
 }
 pub fn escape(string: String) -> Result<String, String> {
     if string.contains('\n') {
-        return Err(String::from("Ninja syntax does not allow newlines"))
+        return Err(String::from("Ninja syntax does not allow newlines"));
     }
     let string = string.replace("$", "$$");
     Ok(string)
 }
 
-
-pub fn expand(string: &mut String, vars: HashMap<String, String>, local_vars: HashMap<String, String>) -> String {
+pub fn expand(
+    string: &mut String,
+    vars: HashMap<String, String>,
+    local_vars: HashMap<String, String>,
+) -> String {
     /* Expand a string containing $vars as Ninja would.
 
     Note: doesn't handle the full Ninja variable syntax, but it's enough
     to make configure.py's use of it work.
     */
-    fn exp(m: regex::Captures, vars: &HashMap<String, String>, local_vars: &HashMap<String, String>) -> String {
+    fn exp(
+        m: regex::Captures,
+        vars: &HashMap<String, String>,
+        local_vars: &HashMap<String, String>,
+    ) -> String {
         let var = m.get(1).unwrap().as_str();
         if var == "$" {
-            return "$".to_string()
+            return "$".to_string();
         }
-        return local_vars.get(&var.to_owned()).unwrap_or(vars.get(&var.to_owned()).unwrap_or(&String::new())).to_owned();
+        return local_vars
+            .get(&var.to_owned())
+            .unwrap_or(vars.get(&var.to_owned()).unwrap_or(&String::new()))
+            .to_owned();
     }
     let re = Regex::new(r#"\$(\$|\w*)"#).unwrap();
     let string_clone = string.clone();
@@ -292,8 +302,8 @@ impl Writer {
             ),
             None,
         );
-    } 
-    
+    }
+
     pub fn close(mut self) {
         let _ = self.output.flush().unwrap();
     }
@@ -361,4 +371,3 @@ pub enum VariableValue {
     Str(String),
     ListStr(Vec<String>),
 }
-
