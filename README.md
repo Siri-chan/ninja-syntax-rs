@@ -16,6 +16,8 @@ Do also note that this crate provides even less abstraction than the crate
 published under the same name on crates.io - this is mostly just because 
 I wanted to be able to write to stdout, and also to more-directly work with some 
 old draft python code.
+I also decided not to rename this and publish it to crates.io, mostly because I 
+kinda reinvented the wheel, and taking attention from others work isn't cool.
 If you are working from scratch, check out the other package of the same name.
 
 To depend on this crate, add the following dependency:

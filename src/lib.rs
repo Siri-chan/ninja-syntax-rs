@@ -20,10 +20,10 @@ from typing import Dict, List, Match, Optional, Tuple, Union
 */
 use textwrap::{Options, WordSplitter};
 
-pub fn escape_path(word: &String) -> String {
+pub fn escape_path(word: &str) -> String {
     word.replace("$ ", "$$ ")
-        .replace(" ", "$ ")
-        .replace(":", "$:")
+        .replace(' ', "$ ")
+        .replace(':', "$:")
 }
 pub struct RuleDescriptor {
     name: String,
@@ -57,7 +57,7 @@ pub fn escape(string: String) -> Result<String, String> {
     if string.contains('\n') {
         return Err(String::from("Ninja syntax does not allow newlines"));
     }
-    let string = string.replace("$", "$$");
+    let string = string.replace('$', "$$");
     Ok(string)
 }
 
@@ -80,10 +80,10 @@ pub fn expand(
         if var == "$" {
             return "$".to_string();
         }
-        return local_vars
+        local_vars
             .get(&var.to_owned())
             .unwrap_or(vars.get(&var.to_owned()).unwrap_or(&String::new()))
-            .to_owned();
+            .to_owned()
     }
     let re = Regex::new(r#"\$(\$|\w*)"#).unwrap();
     let string_clone = string.clone();
@@ -92,7 +92,7 @@ pub fn expand(
         let full_match = matc.get(0).unwrap();
         string.replace_range(full_match.start()..full_match.end(), &exp(matc, &vars, &local_vars))
     }
-    return string.clone();
+    string.clone()
 }
 
 pub struct Writer {
@@ -109,7 +109,7 @@ impl Default for Writer {
 }
 impl Writer {
     pub fn newline(&mut self) {
-        write!(&mut self.output, "\n").unwrap();
+        writeln!(&mut self.output).unwrap();
     }
     pub fn comment(&mut self, text: String) {
         for line in textwrap::wrap(
@@ -118,7 +118,7 @@ impl Writer {
                 .break_words(false)
                 .word_splitter(WordSplitter::NoHyphenation),
         ) {
-            write!(&mut self.output, "#{}\n", line).unwrap()
+            writeln!(&mut self.output, "#{}", line).unwrap()
         }
     }
     pub fn variable(&mut self, key: String, value: Option<VariableValue>, indent: Option<usize>) {
@@ -211,8 +211,8 @@ impl Writer {
         outputs: Vec<String>,
         rule: String,
         inputs: Vec<String>,
-        implicit: &mut Vec<String>,
-        order_only: &mut Vec<String>,
+        implicit: &mut [String],
+        order_only: &mut [String],
         variables: Option<HashMap<String, Vec<String>>>,
         implicit_outputs: Vec<String>,
         pool: Option<String>,
@@ -226,12 +226,12 @@ impl Writer {
         let mut all_inputs: Vec<String> = inputs.into_iter().map(|x| escape_path(&x)).collect();
 
         if !implicit.is_empty() {
-            let mut implicit = implicit.into_iter().map(|x| escape_path(&x)).collect();
+            let mut implicit = implicit.iter_mut().map(|x| escape_path(x)).collect();
             all_inputs.push("|".to_string());
             all_inputs.append(&mut implicit);
         }
         if !order_only.is_empty() {
-            let mut order_only = order_only.into_iter().map(|x| escape_path(x)).collect();
+            let mut order_only = order_only.iter_mut().map(|x| escape_path(x)).collect();
             all_inputs.push("||".to_string());
             all_inputs.append(&mut order_only);
         }
@@ -305,7 +305,7 @@ impl Writer {
     }
 
     pub fn close(mut self) {
-        let _ = self.output.flush().unwrap();
+        self.output.flush().unwrap();
     }
 
     /// Write 'text' word-wrapped at self.width characters.
@@ -321,7 +321,7 @@ impl Writer {
             let available_space = (self.width as usize) - leading_space.len() - " $".len();
             let mut space = available_space;
             loop {
-                let res = text.clone().split_at(space as usize).0.rfind(' ');
+                let res = text.clone().split_at(space).0.rfind(' ');
                 if res.is_none() {
                     space = 0;
                     break;
@@ -342,7 +342,7 @@ impl Writer {
                 }
             }
             // Give up.
-            write!(&mut self.output, "{}{} $\n", leading_space, &text[0..space]).unwrap();
+            writeln!(&mut self.output, "{}{} $", leading_space, &text[0..space]).unwrap();
             string = text.split_at(space + 1).1.to_string();
             text = &string;
 
@@ -350,11 +350,11 @@ impl Writer {
             leading_space = "  ".repeat(indent + 2)
         }
 
-        write!(&mut self.output, "{}{}\n", leading_space, text).unwrap();
+        writeln!(&mut self.output, "{}{}", leading_space, text).unwrap();
     }
     /// Returns the number of `$` directly before s[i]
-    fn count_dollars_before_index(s: &String, i: usize) -> usize {
-        let mut q = s.clone().split_at(i).0.chars().rev().collect::<String>();
+    fn count_dollars_before_index(s: &str, i: usize) -> usize {
+        let mut q = s.to_owned().split_at(i).0.chars().rev().collect::<String>();
         let mut i = 0;
         while q.find('$') == Some(0) {
             q.pop();
