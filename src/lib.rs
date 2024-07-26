@@ -364,10 +364,48 @@ impl Writer {
     }
 }
 
+#[derive(Debug, Clone)]
 pub enum VariableValue {
     Bool(bool),
     Int(isize),
     Float(f64),
     Str(String),
     ListStr(Vec<String>),
+}
+impl From<bool> for VariableValue {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
+    }
+}
+/*
+impl TryFrom<i8> for VariableValue {
+    if i8::BITS > isize::BITS {
+        return Err(())
+    }
+}
+*/
+/*
+impl From<int {
+    
+}
+*/ // IDK if I could bother to implement from for every valid int/float type rn
+impl From<f64> for VariableValue {
+    fn from(value: f64) -> Self {
+        return Self::Float(value);
+    }
+}
+impl From<f32> for VariableValue {
+    fn from(value: f32) -> Self {
+        return Self::Float(value as f64);
+    }
+}
+impl From<String> for VariableValue {
+    fn from(value: String) -> Self {
+        Self::Str(value)
+    }
+}
+impl From<Vec<String>> for VariableValue {
+    fn from(value: Vec<String>) -> Self {
+        Self::ListStr(value)
+    }
 }
